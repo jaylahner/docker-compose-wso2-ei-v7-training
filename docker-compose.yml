@@ -70,3 +70,30 @@ services:
       - "8280:8280"
       # PassThroughListeningIOReactorManager Pass-through HTTPS Listener
       - "8243:8243"
+
+  micro-integrator:
+    build: ./dockerfiles/mi
+    container_name: wso2-mi-training
+    environment:
+      - JAVA_OPTS=-DenableManagementApi=true
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8290"]
+      interval: 10s
+      start_period: 30s
+      retries: 10 
+    depends_on:
+      mysql:
+        condition: service_healthy
+      api-manager:
+        condition: service_healthy
+    volumes:
+      - ./conf/mi:/home/wso2carbon/wso2-config-volume
+    ports:
+      # Pass-through HTTP Listener
+      - "8290:8290"
+      # Pass-through HTTPS Listener
+      - "8253:8253"
+      # Pass-through EI_INTERNAL_HTTP_INBOUND_ENDPOINT Listener
+      - "9201:9201"
+      # Pass-through EI_INTERNAL_HTTPS_INBOUND_ENDPOINT Listener
+      - "9164:9164"
