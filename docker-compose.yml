@@ -35,3 +35,38 @@ services:
       timeout: 60s
       retries: 5
       start_period: 80s
+
+  api-manager:
+    build: ./dockerfiles/apim
+    container_name: wso2-apim-training
+    healthcheck:
+      test: ["CMD", "nc", "-z","localhost", "8280"]
+      interval: 10s
+      start_period: 180s
+      retries: 20
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./conf/apim:/home/wso2carbon/wso2-config-volume
+    ports:
+      # WebsocketEndpointManager Netty Listener
+      - "9099:9099"
+      # WebsocketEndpointManager Netty SSL Listener
+      - "8099:8099"
+      # PassThroughListeningIOReactorManager Pass-through WebhookServer Listener
+      - "9021:9021"
+      # PassThroughListeningIOReactorManager Pass-through SecureWebhookServer Listener
+      - "8021:8021"
+      # JMX Agent [Broker] TCP port
+      - "5672:5672"
+      # JMX Agent [Broker] TCP/SSL port
+      - "8672:8672"
+      # BinaryDataReceiver Binary SSL Transport port
+      - "9711:9711"
+      # BinaryDataReceiver Binary TCP Transport port
+      - "9611:9611"
+      # PassThroughListeningIOReactorManager Pass-through HTTP Listener
+      - "8280:8280"
+      # PassThroughListeningIOReactorManager Pass-through HTTPS Listener
+      - "8243:8243"
