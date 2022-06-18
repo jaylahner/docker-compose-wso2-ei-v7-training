@@ -1,4 +1,4 @@
-![WSO2 Enterprise Integrator](gh-docs/images/wso2-integration-logo.png?raw=true)
+![WSO2 Enterprise Integrator](wso2-integration-logo.png?raw=true)
 
 [![Build Status][badge-travis-image]][badge-travis-url]
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/wso2/product-ei/blob/master/LICENSE)
