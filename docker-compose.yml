@@ -150,6 +150,21 @@ services:
       # Pass-through EI_INTERNAL_HTTPS_INBOUND_ENDPOINT Listener
       - "9164:9164"
 
+  hospital-service:
+    build: ./dockerfiles/hospital-service
+    container_name: wso2-hospital-service
+    hostname: wso2-hospital-service-container
+    networks:
+      - wso2-training
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9090"]
+      interval: 10s
+      start_period: 30s
+      retries: 10 
+    ports:
+      # Pass-through HTTP Listener
+      - "9090:9090"
+
 volumes:
   rabbitmq_data:
     driver: local
