@@ -17,6 +17,8 @@ services:
   mysql:
     image: mysql:5.7.37
     container_name: wso2-mysql-training
+    networks:
+      - wso2-training
     ports:
       - 3306
     environment:
@@ -36,9 +38,37 @@ services:
       retries: 5
       start_period: 80s
 
+  rabbitmq:
+    image: docker.io/bitnami/rabbitmq:3.10
+    container_name: rabbitmq-wso2-training
+    networks:
+      - wso2-training
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "5672"]
+      interval: 10s
+      start_period: 30s
+      retries: 10 
+    ports:
+      - '4369:4369'
+      - '5551:5551'
+      - '5552:5552'
+      - '5673:5672'
+      - '25672:25672'
+      - '15672:15672'
+    environment:
+      - RABBITMQ_VHOST=rabbitmq-container
+      - RABBITMQ_USERNAME=admin
+      - RABBITMQ_PASSWORD=admin
+      - RABBITMQ_SECURE_PASSWORD=yes
+      - RABBITMQ_LOGS=-
+    volumes:
+      - 'rabbitmq_data:/bitnami/rabbitmq/mnesia'
+
   api-manager:
     build: ./dockerfiles/apim
     container_name: wso2-apim-training
+    networks:
+      - wso2-training
     healthcheck:
       test: ["CMD", "nc", "-z","localhost", "8280"]
       interval: 10s
@@ -71,9 +101,31 @@ services:
       # PassThroughListeningIOReactorManager Pass-through HTTPS Listener
       - "8243:8243"
 
+  micro-integrator-dashboard:
+    build: ./dockerfiles/mi-dashboard
+    container_name: wso2-mi-dashboard-training
+    hostname: wso2-mi-dashboard-training-container
+    networks:
+      - wso2-training
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "9743"]
+      interval: 10s
+      start_period: 30s
+      retries: 10 
+    depends_on:
+      mysql:
+        condition: service_healthy
+    volumes:
+      - ./conf/mi-dashboard:/home/wso2carbon/wso2-config-volume
+    ports:
+      # Pass-through HTTP Listener
+      - "9743:9743"
+
   micro-integrator:
     build: ./dockerfiles/mi
     container_name: wso2-mi-training
+    networks:
+      - wso2-training
     environment:
       - JAVA_OPTS=-DenableManagementApi=true
     healthcheck:
@@ -97,3 +149,11 @@ services:
       - "9201:9201"
       # Pass-through EI_INTERNAL_HTTPS_INBOUND_ENDPOINT Listener
       - "9164:9164"
+
+volumes:
+  rabbitmq_data:
+    driver: local
+
+networks:
+  wso2-training:
+    driver: bridge

@@ -54,23 +54,23 @@ algorithm = "AES"
 # [transport.jndi.topic]
 # jndiNameOfTopic = "physicalNameOfTopic"
 
-# [transport.rabbitmq]
-# sender_enable = true
-# listener_enable = true
+[transport.rabbitmq]
+sender_enable = true
+listener_enable = true
 
-# [[transport.rabbitmq.sender]]
-# name = "AMQPConnectionFactory"
-# parameter.hostname = "localhost"
-# parameter.port = 5672
-# parameter.username = "guest"
-# parameter.password = "guest"
+[[transport.rabbitmq.sender]]
+name = "AMQPConnectionFactory"
+parameter.hostname = "rabbitmq-container"
+parameter.port = 5673
+parameter.username = "admin"
+parameter.password = "admin"
 
-# [[transport.rabbitmq.listener]]
-# name = "AMQPConnectionFactory"
-# parameter.hostname = "localhost"
-# parameter.port = 5672
-# parameter.username = "guest"
-# parameter.password = "guest"
+[[transport.rabbitmq.listener]]
+name = "AMQPConnectionFactory"
+parameter.hostname = "rabbitmq-container"
+parameter.port = 5673
+parameter.username = "admin"
+parameter.password = "admin"
 
 # [[transport.phase_order]]
 # Entire phase_order list can be found under 'Axis2 Phases' in <MI_HOME>/repository/resources/conf/deployment-full.toml.
@@ -80,12 +80,12 @@ algorithm = "AES"
 # [system.parameter]
 # 'key' = "value"
 
-# [[datasource]]
-# id = "WSO2CarbonDB"  # "WSO2_COORDINATION_DB"
-# url = "jdbc:mysql://localhost:3306/integratordb"
-# username = "root"
-# password = "root"
-# driver = "com.mysql.jdbc.Driver"
+[[datasource]]
+id = "Datasource"
+url = "jdbc:mysql://mysql:3306/Employees"
+username = "wso2carbon"
+password = "wso2carbon"
+driver = "com.mysql.cj.jdbc.Driver"
 
 # [management_api]
 # protocols = "http"
@@ -111,5 +111,6 @@ enable = true
 username = "admin"
 password = "admin"
 
-# [dashboard_config]
-# dashboard_url = "https://localhost:9743/dashboard/api/"
+[dashboard_config]
+dashboard_url = "https://wso2-mi-dashboard-training-container:9743/dashboard/api/"
+heartbeat_interval = 5
