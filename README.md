@@ -43,7 +43,16 @@ Configurations and non-configuration resources (e.g. binaries such as, third-par
 Carbon Applications and security related artifacts such as, Java Keystore files) are designed to be provided via
 volume mounts to the containers spawned.
 
-# Usage
+# Getting Started
+### Prerequisites
+
+In order to run to deploy this training cluster, you need to have the following already installed:
+ - [Docker][]
+ - [Docker-Compose][]
+
+
 
 [badge-travis-image]: https://wso2.org/jenkins/job/products/job/product-ei/badge/icon
 [badge-travis-url]: https://wso2.org/jenkins/job/products/job/product-ei
+[docker]: https://docs.docker.com/get-docker/
+[docker-compose]: https://docs.docker.com/compose/install/

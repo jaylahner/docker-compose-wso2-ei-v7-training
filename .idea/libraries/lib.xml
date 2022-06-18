@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dockerfiles/mi-dashboard/lib/email-connector-1.0.2/lib/tika-core-1.18.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dockerfiles/mi-dashboard/lib/email-connector-1.0.2/lib/commons-email-1.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/dockerfiles/mi-dashboard/lib/email-connector-1.0.2/lib/jakarta.mail-1.6.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
