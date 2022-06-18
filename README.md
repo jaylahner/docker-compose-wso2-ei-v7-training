@@ -44,3 +44,6 @@ Carbon Applications and security related artifacts such as, Java Keystore files)
 volume mounts to the containers spawned.
 
 # Usage
+
+[badge-travis-image]: https://wso2.org/jenkins/job/products/job/product-ei/badge/icon
+[badge-travis-url]: https://wso2.org/jenkins/job/products/job/product-ei
