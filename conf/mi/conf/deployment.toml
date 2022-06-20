@@ -60,17 +60,19 @@ listener_enable = true
 
 [[transport.rabbitmq.sender]]
 name = "AMQPConnectionFactory"
-parameter.hostname = "rabbitmq-container"
-parameter.port = 5673
-parameter.username = "admin"
-parameter.password = "admin"
+parameter.hostname = "rabbitmq"
+parameter.port = 5672
+parameter.username = "user"
+parameter.password = "bitnami"
 
 [[transport.rabbitmq.listener]]
 name = "AMQPConnectionFactory"
-parameter.hostname = "rabbitmq-container"
-parameter.port = 5673
-parameter.username = "admin"
-parameter.password = "admin"
+parameter.hostname = "rabbitmq"
+parameter.port = 5672
+parameter.username = "user"
+parameter.password = "bitnami"
+parameter.retry_interval = "10"
+parameter.retry_count = 5
 
 # [[transport.phase_order]]
 # Entire phase_order list can be found under 'Axis2 Phases' in <MI_HOME>/repository/resources/conf/deployment-full.toml.

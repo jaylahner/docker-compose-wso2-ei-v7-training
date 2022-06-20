@@ -22,6 +22,7 @@ services:
     ports:
       - 3306
     environment:
+      # Do not reconfigure mysql root password!
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - ./conf/mysql/scripts:/docker-entrypoint-initdb.d
@@ -31,6 +32,7 @@ services:
         soft: 20000
         hard: 40000
     command: [--ssl=0]
+    # Health check must pass in order for services [api-manager, micro-integrator] to start
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-uroot", "-proot"]
       interval: 30s
@@ -39,36 +41,49 @@ services:
       start_period: 80s
 
   rabbitmq:
+    # RabbitMq docker resource is owned and managed and by Bitnami.
+    # Refer to https://github.com/bitnami/bitnami-docker-rabbitmq for documentation.
     image: docker.io/bitnami/rabbitmq:3.10
-    container_name: rabbitmq-wso2-training
+    container_name: rabbitmq
+    # Host name to be used for inter-container communication
+    hostname: rabbitmq
     networks:
       - wso2-training
     ports:
       - '4369:4369'
       - '5551:5551'
       - '5552:5552'
-      - '5673:5672'
+      # HTTP Broker Listener
+      - '5672:5672'
       - '25672:25672'
+      # HTTP Listener for UI Manager accessable at http://localhost:15672
       - '15672:15672'
     environment:
-      - RABBITMQ_VHOST=rabbitmq-container
-      - RABBITMQ_USERNAME=admin
-      - RABBITMQ_PASSWORD=admin
+      - RABBITMQ_USERNAME=user
+      - RABBITMQ_PASSWORD=bitnami
       - RABBITMQ_SECURE_PASSWORD=yes
       - RABBITMQ_LOGS=-
     volumes:
       - 'rabbitmq_data:/bitnami/rabbitmq/mnesia'
+    # Health check must pass in order for services [micro-integrator] to start
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 30s
+      retries: 3
 
   api-manager:
     build: ./dockerfiles/apim
     container_name: wso2-apim-training
     networks:
       - wso2-training
+    # Health check must pass in order for services [micro-integrator] to start
     healthcheck:
       test: ["CMD", "nc", "-z","localhost", "8280"]
       interval: 10s
       start_period: 180s
       retries: 20
+    # Dependent on healthy status for services [mysql] to start
     depends_on:
       mysql:
         condition: service_healthy
@@ -83,8 +98,10 @@ services:
       - "9021:9021"
       # PassThroughListeningIOReactorManager Pass-through SecureWebhookServer Listener
       - "8021:8021"
+      # Uncomment to publish JMX Agent [Broker] TCP port.
+      # Port has been disabled as it conflicts with RabbitMq
       # JMX Agent [Broker] TCP port
-      - "5672:5672"
+      # - "5672:5672"
       # JMX Agent [Broker] TCP/SSL port
       - "8672:8672"
       # BinaryDataReceiver Binary SSL Transport port
@@ -102,18 +119,16 @@ services:
     hostname: wso2-mi-dashboard-training-container
     networks:
       - wso2-training
+    # Health check must pass in order for services [micro-integrator] to start
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "9743"]
       interval: 2s
       start_period: 10s
-      retries: 10 
-    depends_on:
-      mysql:
-        condition: service_healthy
+      retries: 5
     volumes:
       - ./conf/mi-dashboard:/home/wso2carbon/wso2-config-volume
     ports:
-      # Pass-through HTTP Listener
+      # Pass-through HTTP Listener for UI accessable at https://localhost:9743/login
       - "9743:9743"
 
   micro-integrator:
@@ -133,12 +148,19 @@ services:
         condition: service_healthy
       api-manager:
         condition: service_healthy
+      micro-integrator-dashboard:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
     volumes:
       - ./conf/mi:/home/wso2carbon/wso2-config-volume
       - ./dockerfiles/mi/capps:/home/wso2carbon/wso2mi-4.1.0/repository/deployment/server/carbonapps
     ports:
       # Pass-through HTTP Listener
       - "8290:8290"
+      # Pass-through HTTP Listener QueryDoctor Inbound Endpoint
+      - "8285:8285"
       # Pass-through HTTPS Listener
       - "8253:8253"
       # Pass-through EI_INTERNAL_HTTP_INBOUND_ENDPOINT Listener
@@ -162,4 +184,5 @@ volumes:
 
 networks:
   wso2-training:
-    driver: bridge
+    external: 
+      name: wso2-training
