@@ -18,3 +18,8 @@
 
 FROM wso2/wso2mi-dashboard:4.1.0
 LABEL maintainer="WSO2 Docker Maintainers <dev@wso2.org>"
+
+RUN apk add --update-cache \
+    netcat-openbsd \
+  && rm -rf /var/cache/apk/*
+

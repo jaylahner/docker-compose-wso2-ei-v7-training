@@ -43,11 +43,6 @@ services:
     container_name: rabbitmq-wso2-training
     networks:
       - wso2-training
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "5672"]
-      interval: 10s
-      start_period: 30s
-      retries: 10 
     ports:
       - '4369:4369'
       - '5551:5551'
@@ -109,8 +104,8 @@ services:
       - wso2-training
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "9743"]
-      interval: 10s
-      start_period: 30s
+      interval: 2s
+      start_period: 10s
       retries: 10 
     depends_on:
       mysql:
@@ -140,6 +135,7 @@ services:
         condition: service_healthy
     volumes:
       - ./conf/mi:/home/wso2carbon/wso2-config-volume
+      - ./dockerfiles/mi/capps:/home/wso2carbon/wso2mi-4.1.0/repository/deployment/server/carbonapps
     ports:
       # Pass-through HTTP Listener
       - "8290:8290"
@@ -153,14 +149,9 @@ services:
   hospital-service:
     build: ./dockerfiles/hospital-service
     container_name: wso2-hospital-service
-    hostname: wso2-hospital-service-container
+    hostname: hospital-service
     networks:
       - wso2-training
-    healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "9090"]
-      interval: 10s
-      start_period: 30s
-      retries: 10 
     ports:
       # Pass-through HTTP Listener
       - "9090:9090"
